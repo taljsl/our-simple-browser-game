@@ -1,14 +1,15 @@
 
 // Variables go here
-const prompt = require("prompt-sync")();
+
 const gameTextElement = document.querySelector('p')
 const gameInputElement= document.querySelector('input')
 const subButtonElement = document.querySelector('button')
+console.dir(gameTextElement)
 let input = ''
 let playerHP = 10
 let computerHP = 10
 let round = 1
-const userName=  prompt ('What is your name, pardner?');
+
 
 
 
@@ -21,11 +22,13 @@ const getRandomNumber = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 subButtonElement.addEventListener('click',() => {
-    input = gameInputElement.textContent;
+    input = gameInputElement.value;
+    console.log(input)
 });
 
 const damageComputer = () => computerHP--;
 const damagePlayer = () => playerHP--;
+// const clearInput= () => input = '';
 
 
 
@@ -33,15 +36,19 @@ const damagePlayer = () => playerHP--;
 
 
 
+// Game loop below
+// let gameState = true
+// 1) We should display a welcome message
+//     1a)Press any key to continue
+// gameTextElement.innerText === 'Submit Any Text to Begin' && 
+// while(gameState){
+if(gameTextElement.innerText === 'Submit Any Text to Begin' &&input!== ''){
+    gameTextElement.innerText = "Welcome to the west pardner, its right around noon. Looks like a duel is in order. Why don't you show us how it should be done around here."
+}
 
-
-// Codebase goes here
-
-
-
+console.log(input)
+// }
 /* 
-1) We should display a welcome message
-    1a)Press any key to continue
 2) Explain the premise
     2a) explain the rules
     Press any key to continue
