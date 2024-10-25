@@ -9,62 +9,184 @@ document.addEventListener("DOMContentLoaded", () => {
   let playerHP = 10;
   let computerHP = 10;
   let round = 1;
-let currentMessage = 'Submit Any Text to Begin'
-let userName = ''
-  const welcomeMessage =
-    "Welcome to the West pardner, its right around noon. Looks like a duel is in order. Why don't you show us how it should be done around here.  \n Submit Any Text to continue";
-  const rulesText =
-    "In High Noon you will be dueling a dang dirty varmint who has offended your honor somehow. You have met at High Noon to duel each other. As any proper cowboy knows, there are three ways to fight. Shooting each other, Stabbing each other, and Wrastling each other. Each cowboy attack maneuver has an advantage over another, but also a weakness. Basically Gun Beats Knife, Knife stabs the Wrestling Idiot, and It's hard to fire a gun while being choked out. Of course as we all know, if two cowboys shoot at each other at the same time, the bullets will collide in mid air. Similar Events happen with Wrastling to a standstill, and knives parrying knives. \n Submit Any Text to Continue";
-    const getUsername = "What's your name Pardner?"
-  // Functions go here
+  let currentMessage = "Submit Any Text to Begin";
+  let userName = "";
+  let combatMessage = "";
   // this function from Josh's terminal game
   const getRandomNumber = (min, max) => {
     min = Math.ceil(min); // Round up the minimum value
     max = Math.floor(max); //Round Down the maximum Value
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
-
   const damageComputer = () => computerHP--;
   const damagePlayer = () => playerHP--;
-  const clearInput = () => input = "";
+  const clearInput = () => {
+    input = "";
+    gameInputElement.value = "";
+  };
+  //variables to display until combat
+  const welcomeMessage =
+    "Welcome to the West pardner, its right around noon. Looks like a duel is in order. Why don't you show us how it should be done around here.  \n Submit Any Text to continue";
+  const rulesText =
+    "In High Noon you will be dueling a dang dirty varmint who has offended your honor somehow. You have met at High Noon to duel each other. As any proper cowboy knows, there are three ways to fight. Shooting each other, Stabbing each other, and Wrastling each other. Each cowboy attack maneuver has an advantage over another, but also a weakness. Basically Gun Beats Knife, Knife stabs the Wrestling Idiot, and It's hard to fire a gun while being choked out. Of course as we all know, if two cowboys shoot at each other at the same time, the bullets will collide in mid air. Similar Events happen with Wrastling to a standstill, and knives parrying knives. \n Submit Any Text to Continue";
+  const getUsername = "What's your name Pardner?";
+
+  //Variables for combat
+  let currentTotals = `You have ${playerHP} remaining and your foe has ${computerHP} remaining \n Press 1 to Shoot your revolver at your opponent \n Press 2 to run up and Stab your opponent \n Press 3 to Wrastle your opponent.`;
+  const combatMessages =
+    "You and your foe square off the sun reaches it's zenith and the belltower begins to ring what would you like to do? \n Press 1 to Shoot your revolver at your opponent \n Press 2 to run up and Stab your opponent \n Press 3 to Wrastle your opponent.";
+  const shootDrawMessage = `Round ${round} \n You and your foe raise your endless ammo revolvers and fire at each other. As we all know however when two revolvers fire at each other at the same time \n${currentTotals}`;
+  const shootWinMessage = `Round ${round} \n Your foe foolishly tried to run in and stab you a big fat bullet taught him the error of his ways. \n${currentTotals}`;
+  const shootLoseMessage = `Round ${round} \n You foolishly tried to run up and stab your opponent. He shot you for your troubles\n${currentTotals}`;
+  const stabDraw = `Round ${round} \n You and your foe both draw your blades and charge at each other, the Mirror match proves too much however and you each only manage to nick each others blades\n${currentTotals}`;
+  const stabWin = `Round ${round} \n Your foe decided he wanted to go bare hands with you to prove how superior he is, your knife in his guts taught him the error of his ways \n${currentTotals}`;
+  const stabLose = `Round ${round} \n You should have known better than to bring a knife to a gun fight\n${currentTotals}`;
+  const wrastleDraw = `Round ${round} \n You and your foe grasp at each other's necks. Too stubborn to let go, you play a game of chicken to see who will pas out first. Only to let go gasping for air at the same time.\n${currentTotals}`;
+  const wrastleWin = `Round ${round} \n Your foe has learned the hard way that when you pin his gun hand down and punch him in the face a whole lot it's really hard to aim\n${currentTotals}`;
+  const wrastleLose = `Round ${round} \n You charged your foe trying to Wrastle with him and beat him up bare handed...He pulls out a knife and stabs you for your troubles\n${currentTotals}`;
+  const invalidCombat = `That was an invalid input, you can only \n 1) Shoot \n Stab \n Wrastle`;
+  const victoryMessage =
+    "VICTORY \n You stand over you fallen foe as he bleeds out on the ground. \n Word of what you have done here will spread far and wide \n Would you like to play again?";
+  const gameOverMessage =
+    "Game Over \n Your opponent stands over you  as you bleed out.\n The last thing you see is your foe smirking at you as he turns around and walks away\n Would you like to play again?";
+  // Functions go here
+  const newGame = () => {
+    round = 1;
+    playerHP = 10;
+    computerHP = 10;
+  };
+  const combatFunction = (inputs) => {
+    let gameState = true;
+    while (gameState) {
+      //how to check prep combat result
+      let compResult = getRandomNumber(1, 3);
+      //draw results
+      if (inputs == 1 && compResult == 1) {
+        combatMessage = shootDrawMessage;
+        gameTextElement.innerText = shootDrawMessage;
+        currentMessage = shootDrawMessage;
+        round++;
+        clearInput();
+      } else if (inputs == 2 && compResult == 2) {
+        combatMessage = stabDraw;
+        gameTextElement.innerText = stabDraw;
+        round++;
+        clearInput();
+      } else if (inputs == 3 && compResult == 3) {
+        combatMessage = wrastleDraw;
+        gameTextElement.innerText = wrastleDraw;
+        round++;
+        clearInput();
+      } // player win-conditions
+      else if (inputs == 1 && compResult == 2) {
+        damageComputer();
+        combatMessage = shootWinMessage;
+        gameTextElement.innerText = shootWinMessage;
+        round++;
+        clearInput();
+      } else if (inputs == 2 && compResult == 3) {
+        damageComputer();
+        combatMessage = stabWin;
+        gameTextElement.innerText = stabWin;
+        round++;
+        clearInput();
+      } else if (inputs == 3 && compResult == 1) {
+        damageComputer();
+        combatMessage = wrastleWin;
+        gameTextElement.innerText = wrastleWin;
+        round++;
+        clearInput();
+      } //player lose conditions
+      else if (inputs == 1 && compResult == 3) {
+        damagePlayer();
+        combatMessage = shootLoseMessage;
+        gameTextElement.innerText = shootLoseMessage;
+        round++;
+        clearInput();
+      } else if (inputs == 2 && compResult == 1) {
+        damagePlayer();
+        combatMessage = stabLose;
+        gameTextElement.innerText = stabLose;
+        round++;
+        clearInput();
+      } else if (inputs == 3 && compResult == 2) {
+        damagePlayer();
+        combatMessage = wrastleLose;
+        gameTextElement.innerText = wrastleLose;
+        round++;
+        clearInput;
+      } else {
+        combatMessage = invalidCombat;
+        gameTextElement.innerText = invalidCombat;
+      }
+      //check to see if game is over
+      if (playerHP === 0) {
+        combatMessage = gameOverMessage;
+        gameTextElement.innerText = gameOverMessage;
+        if (input == "y") {
+          newGame();
+          clearInput();
+        } else {
+          gameState = false;
+        }
+      } else if (computerHP === 0) {
+        combatMessage = victoryMessage;
+        gameTextElement.innerText = victoryMessage;
+        if (input == "y") {
+          newGame();
+          clearInput();
+        } else {
+          gameState = false;
+        }
+      }
+    }
+  };
 
   // Game loop below
 
   // 1) We should display a welcome message
   //     1a)Press any key to continue
 
-  subButtonElement.addEventListener("click", () => {
+  const runGame = () => {
     input = gameInputElement.value;
     console.log(input);
     if (currentMessage === "Submit Any Text to Begin" && input !== "") {
-        gameTextElement.innerText = welcomeMessage;
-        currentMessage = welcomeMessage
-        clearInput();
+      gameTextElement.innerText = welcomeMessage;
+      currentMessage = welcomeMessage;
+      clearInput();
     }
     //   2) Explain the premise
     //2a) explain the rules
-    else if (currentMessage === welcomeMessage && input !== '' ) {
-        gameTextElement.innerText = rulesText;
-        currentMessage = rulesText;
-        clearInput();
+    else if (currentMessage === welcomeMessage && input !== "") {
+      gameTextElement.innerText = rulesText;
+      currentMessage = rulesText;
+      clearInput();
+    } else if (currentMessage === rulesText && input !== "") {
+      gameTextElement.innerText = getUsername;
+      currentMessage = getUsername;
+      clearInput();
+    } else if (currentMessage === getUsername && input !== "") {
+      userName = input;
+      let welcomeUsername = `Welcome ${userName}\n Submit Any Text to Continue to Violence`;
+      gameTextElement.innerText = welcomeUsername;
+      currentMessage = "Ready for Combat";
+      clearInput();
+    } else {
+      combatFunction(input);
     }
-    else if(currentMessage === rulesText && input !== '') {
-        gameTextElement.innerText = getUsername;
-        currentMessage = getUsername;
-        clearInput();
-    }
-    else if (currentMessage === getUsername && input !== '') {
-                userName = input;
-        let welcomeUsername = `Welcome ${userName}`
-        gameTextElement.innerText = welcomeUsername;
-        currentMessage = welcomeUsername;
-        clearInput();
+  };
+
+  subButtonElement.addEventListener("click", runGame);
+  //Credit to chatgpt for showing me how to do a keyup listener and reminding me that the entire game can be in a function
+  gameInputElement.addEventListener("keyup", (event) => {
+    if (event.key === "Enter") {
+      runGame();
     }
   });
 });
 // }
 /* 
-
+game
 Press any key to continue
 3) Ask the player "Who are you?"
     3a) Welcome them by name
