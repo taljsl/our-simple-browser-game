@@ -1,3 +1,9 @@
+/*
+I have gotten us 80ish percent of the way to a fully functioning game. Issues I have run into are as follows:
+Rounds and HP do not properly update and display during combat
+Game sometimes crashes during combat series of messages and I can't figure out why
+*/
+
 // Variables go here
 document.addEventListener("DOMContentLoaded", () => {
   //This listener recommended by chatgpt
@@ -5,21 +11,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const gameInputElement = document.querySelector("input");
   const subButtonElement = document.querySelector("button");
   console.dir(gameTextElement);
+
+  //let variables
   let input = "";
   let playerHP = 10;
   let computerHP = 10;
-  let round = 1;
+  let round = 0;
   let currentMessage = "Submit Any Text to Begin";
   let userName = "";
-  let combatMessage = "";
+  //   let combatMessage = "";
   // this function from Josh's terminal game
   const getRandomNumber = (min, max) => {
     min = Math.ceil(min); // Round up the minimum value
     max = Math.floor(max); //Round Down the maximum Value
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
+
+  //   damage functions
   const damageComputer = () => computerHP--;
   const damagePlayer = () => playerHP--;
+
+  //   function for clearing input variable and box
   const clearInput = () => {
     input = "";
     gameInputElement.value = "";
@@ -54,91 +66,95 @@ document.addEventListener("DOMContentLoaded", () => {
     round = 1;
     playerHP = 10;
     computerHP = 10;
+    currentMessage = "Submit Any Text to Begin";
+    gameTextElement.innerText = "Submit Any Text to Begin";
+  };
+
+  const checkGameOver = () => {
+    if (playerHP <= 0) {
+      combatMessage = gameOverMessage;
+      gameTextElement.innerText = gameOverMessage;
+      return false; // Game over
+    } else if (computerHP <= 0) {
+      combatMessage = victoryMessage;
+      gameTextElement.innerText = victoryMessage;
+      return false; // Victory
+    }
+    return true; // Game continues
   };
   const combatFunction = (inputs) => {
-    let gameState = true;
-    while (gameState) {
-      //how to check prep combat result
-      let compResult = getRandomNumber(1, 3);
-      //draw results
-      if (inputs == 1 && compResult == 1) {
-        combatMessage = shootDrawMessage;
-        gameTextElement.innerText = shootDrawMessage;
-        currentMessage = shootDrawMessage;
-        round++;
-        clearInput();
-      } else if (inputs == 2 && compResult == 2) {
-        combatMessage = stabDraw;
-        gameTextElement.innerText = stabDraw;
-        round++;
-        clearInput();
-      } else if (inputs == 3 && compResult == 3) {
-        combatMessage = wrastleDraw;
-        gameTextElement.innerText = wrastleDraw;
-        round++;
-        clearInput();
-      } // player win-conditions
-      else if (inputs == 1 && compResult == 2) {
-        damageComputer();
-        combatMessage = shootWinMessage;
-        gameTextElement.innerText = shootWinMessage;
-        round++;
-        clearInput();
-      } else if (inputs == 2 && compResult == 3) {
-        damageComputer();
-        combatMessage = stabWin;
-        gameTextElement.innerText = stabWin;
-        round++;
-        clearInput();
-      } else if (inputs == 3 && compResult == 1) {
-        damageComputer();
-        combatMessage = wrastleWin;
-        gameTextElement.innerText = wrastleWin;
-        round++;
-        clearInput();
-      } //player lose conditions
-      else if (inputs == 1 && compResult == 3) {
-        damagePlayer();
-        combatMessage = shootLoseMessage;
-        gameTextElement.innerText = shootLoseMessage;
-        round++;
-        clearInput();
-      } else if (inputs == 2 && compResult == 1) {
-        damagePlayer();
-        combatMessage = stabLose;
-        gameTextElement.innerText = stabLose;
-        round++;
-        clearInput();
-      } else if (inputs == 3 && compResult == 2) {
-        damagePlayer();
-        combatMessage = wrastleLose;
-        gameTextElement.innerText = wrastleLose;
-        round++;
-        clearInput;
-      } else {
-        combatMessage = invalidCombat;
-        gameTextElement.innerText = invalidCombat;
-      }
-      //check to see if game is over
-      if (playerHP === 0) {
-        combatMessage = gameOverMessage;
-        gameTextElement.innerText = gameOverMessage;
-        if (input == "y") {
-          newGame();
-          clearInput();
-        } else {
-          gameState = false;
-        }
-      } else if (computerHP === 0) {
-        combatMessage = victoryMessage;
-        gameTextElement.innerText = victoryMessage;
-        if (input == "y") {
-          newGame();
-          clearInput();
-        } else {
-          gameState = false;
-        }
-      }
+    //how to check prep combat result
+    let compResult = getRandomNumber(1, 3);
+
+    //draw results
+    if (inputs == 1 && compResult == 1) {
+      combatMessage = shootDrawMessage;
+      round++;
+      gameTextElement.innerText = shootDrawMessage;
+      currentMessage = shootDrawMessage;
+      clearInput();
+      checkGameOver();
+    } else if (inputs == 2 && compResult == 2) {
+      round++;
+      combatMessage = stabDraw;
+      gameTextElement.innerText = stabDraw;
+      clearInput();
+      checkGameOver();
+    } else if (inputs == 3 && compResult == 3) {
+      round++;
+      combatMessage = wrastleDraw;
+      gameTextElement.innerText = wrastleDraw;
+      clearInput();
+      checkGameOver();
+    } // player win-conditions
+    else if (inputs == 1 && compResult == 2) {
+      damageComputer();
+      round++;
+      combatMessage = shootWinMessage;
+      gameTextElement.innerText = shootWinMessage;
+      clearInput();
+      checkGameOver();
+    } else if (inputs == 2 && compResult == 3) {
+      damageComputer();
+      round++;
+      combatMessage = stabWin;
+      gameTextElement.innerText = stabWin;
+      clearInput();
+      checkGameOver();
+    } else if (inputs == 3 && compResult == 1) {
+      damageComputer();
+      round++;
+      combatMessage = wrastleWin;
+      gameTextElement.innerText = wrastleWin;
+      clearInput();
+      checkGameOver();
+    } //player lose conditions
+    else if (inputs == 1 && compResult == 3) {
+      damagePlayer();
+      round++;
+      combatMessage = shootLoseMessage;
+      gameTextElement.innerText = shootLoseMessage;
+      clearInput();
+      checkGameOver();
+    } else if (inputs == 2 && compResult == 1) {
+      damagePlayer();
+      round++;
+      combatMessage = stabLose;
+      gameTextElement.innerText = stabLose;
+      clearInput();
+      checkGameOver();
+    } else if (inputs == 3 && compResult == 2) {
+      damagePlayer();
+      round++;
+      combatMessage = wrastleLose;
+      gameTextElement.innerText = wrastleLose;
+      clearInput();
+      checkGameOver();
+    } else {
+      combatMessage = invalidCombat;
+      gameTextElement.innerText = invalidCombat;
+      clearInput();
+      checkGameOver();
     }
   };
 
@@ -150,32 +166,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const runGame = () => {
     input = gameInputElement.value;
     console.log(input);
+    //   2) Explain the premise
     if (currentMessage === "Submit Any Text to Begin" && input !== "") {
       gameTextElement.innerText = welcomeMessage;
       currentMessage = welcomeMessage;
       clearInput();
     }
-    //   2) Explain the premise
     //2a) explain the rules
     else if (currentMessage === welcomeMessage && input !== "") {
       gameTextElement.innerText = rulesText;
       currentMessage = rulesText;
       clearInput();
-    } else if (currentMessage === rulesText && input !== "") {
+    } //3) Ask the player "Who are you?"
+    else if (currentMessage === rulesText && input !== "") {
       gameTextElement.innerText = getUsername;
       currentMessage = getUsername;
       clearInput();
-    } else if (currentMessage === getUsername && input !== "") {
+    }
+    //3a) Welcome them by name
+    else if (currentMessage === getUsername && input !== "") {
       userName = input;
       let welcomeUsername = `Welcome ${userName}\n Submit Any Text to Continue to Violence`;
       gameTextElement.innerText = welcomeUsername;
-      currentMessage = "Ready for Combat";
       clearInput();
-    } else {
+      currentMessage = combatMessages;
+    } else if (currentMessage === combatMessages) {
+      combatFunction(input);
+      //4) Run the combat
+    } else if (currentMessage === combatMessages) {
       combatFunction(input);
     }
   };
-
   subButtonElement.addEventListener("click", runGame);
   //Credit to chatgpt for showing me how to do a keyup listener and reminding me that the entire game can be in a function
   gameInputElement.addEventListener("keyup", (event) => {
@@ -186,12 +207,11 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 // }
 /* 
-game
-Press any key to continue
-3) Ask the player "Who are you?"
-    3a) Welcome them by name
-    Press any key to continue
-4) Some Flavor text appears
+
+
+
+  
+
 5) Game Begins
 6) User selects "attack"
     6a) npc randomly selects npcAttack
